@@ -62,7 +62,6 @@ uint256 nBestInvalidTrust = 0;
 uint256 hashBestChain = 0;
 CBlockIndex* pindexBest = NULL;
 int64_t nTimeBestReceived = 0;
-map<uint256, uint256> mapProofOfStake;
 
 CMedianFilter<int> cPeerBlockCounts(5, 0); // Amount of blocks that other nodes claim to have
 
@@ -2136,21 +2135,15 @@ bool CBlock::AcceptBlock()
 
     uint256 hashProof;
     // Verify hash target and signature of coinstake tx
-    /*
     if (IsProofOfStake())
     {
-	uint256 targetProofOfStake;
-	uint256 hashProofOfStake = 0;
-	if (!CheckProofOfStake(vtx[1], nBits, hashProofOfStake, targetProofOfStake))
-	{
-	printf("WARNING: AcceptBlock333(): check proof-of-stake failed for block %s\n", hash.ToString().c_str());
-	if (pfrom) pfrom->PushGetBlocks(pindexBest, GetHash());
-	return false; // do not error here as we expect this during initial block download!
-	}
-	if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
-		mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
+        uint256 targetProofOfStake;
+        if (!CheckProofOfStake(vtx[1], nBits, hashProof, targetProofOfStake))
+        {
+            printf("WARNING: AcceptBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str());
+            return false; // do not error here as we expect this during initial block download
+        }
     }
-    */
     // PoW is checked in CheckBlock()
     if (IsProofOfWork())
     {
@@ -2239,23 +2232,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
     // Preliminary checks
     if (!pblock->CheckBlock())
         return error("ProcessBlock() : CheckBlock FAILED");
-	
-    if (pblock->IsProofOfStake())
-    {
-	uint256 targetProofOfStake;
-        uint256 hashProofOfStake = 0;
-        if (!CheckProofOfStake(pblock->vtx[1], pblock->nBits, hashProofOfStake, targetProofOfStake))
-        {
-            printf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str());
 
-            if (pfrom) pfrom->PushGetBlocks(pindexBest, pblock->GetHash());
-
-            return false; // do not error here as we expect this during initial block download!
-        }
-        if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
-            mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
-    }
-	
     CBlockIndex* pcheckpoint = Checkpoints::GetLastSyncCheckpoint();
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain && !Checkpoints::WantedByPendingSyncCheckpoint(hash))
     {
