@@ -2242,6 +2242,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 	
     if (pblock->IsProofOfStake())
     {
+	uint256 targetProofOfStake;
         uint256 hashProofOfStake = 0;
         if (!CheckProofOfStake(pblock->vtx[1], pblock->nBits, hashProofOfStake, targetProofOfStake))
         {
