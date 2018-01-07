@@ -2136,19 +2136,21 @@ bool CBlock::AcceptBlock()
 
     uint256 hashProof;
     // Verify hash target and signature of coinstake tx
-    if (pblock->IsProofOfStake())
+    /*
+    if (IsProofOfStake())
     {
 	uint256 targetProofOfStake;
 	uint256 hashProofOfStake = 0;
-	if (!CheckProofOfStake(pblock->vtx[1], pblock->nBits, hashProofOfStake, targetProofOfStake))
+	if (!CheckProofOfStake(vtx[1], nBits, hashProofOfStake, targetProofOfStake))
 	{
 	printf("WARNING: AcceptBlock333(): check proof-of-stake failed for block %s\n", hash.ToString().c_str());
-	if (pfrom) pfrom->PushGetBlocks(pindexBest, pblock->GetHash());
+	if (pfrom) pfrom->PushGetBlocks(pindexBest, GetHash());
 	return false; // do not error here as we expect this during initial block download!
 	}
 	if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
 		mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
-	}
+    }
+    */
     // PoW is checked in CheckBlock()
     if (IsProofOfWork())
     {
